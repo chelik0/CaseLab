@@ -1,0 +1,133 @@
+sw-core#sh run
+Building configuration...
+
+Current configuration : 2165 bytes
+!
+! Last configuration change at 20:43:30 UTC Tue Sep 29 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname sw-core
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+username itcore privilege 15 secret 5 $1$k2ov$r7Sneg.Iyphgxt0m5r4jk.
+no aaa new-model
+!
+!
+!
+!
+!
+!
+ip multicast-routing
+!
+!
+no ip domain-lookup
+ip domain-name skills.local
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description RP address
+ ip address 10.255.0.1 255.255.255.255
+ ip pim sparse-mode
+!
+interface Ethernet0/0
+ description -=sw-1-as;Ethernet0/0=-
+ switchport trunk allowed vlan 10,30,99
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Ethernet0/1
+ description -=sw-2-as;Ethernet0/0=-
+ switchport trunk allowed vlan 20,99
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Ethernet0/2
+ description -=r-edge;Ethernet0/0=-
+ no switchport
+ ip address 10.150.111.1 255.255.255.252
+!
+interface Ethernet0/3
+!
+interface Vlan10
+ description gateway USERS
+ ip address 10.150.104.1 255.255.255.0
+ ip pim sparse-mode
+!
+interface Vlan20
+ description gateway SERVERS
+ ip address 10.150.105.1 255.255.255.0
+ ip pim sparse-mode
+!
+interface Vlan30
+ description gateway DEV
+ ip address 10.150.106.1 255.255.255.0
+ ip pim sparse-mode
+!
+interface Vlan99
+ description gateway MGMT
+ ip address 10.150.110.1 255.255.255.0
+!
+ip forward-protocol nd
+!
+ip pim rp-address 10.255.0.1
+ip pim ssm default
+ip http server
+ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 10.150.111.2
+ip route 10.150.108.0 255.255.255.0 10.150.111.2
+ip route 10.150.111.0 255.255.255.252 10.150.111.2
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end

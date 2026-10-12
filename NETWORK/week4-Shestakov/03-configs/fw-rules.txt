@@ -1,0 +1,10 @@
+Для LAN
+pass, protocol: ICMP (echo-request), Source: OFFICE_NETS, Destination: TEST_HOST, BRANCH_NET 
+pass, Protocol: TCP, Source Port: any, Destination Port: 80, 443, 22 (алиас PORTS_SVC), Source: OFFICE_NETS, Destination: BRANCH_NET.
+правило Block для всего лишнего с включенным логированием
+
+Для WAN
+Pass, Protocol: ICMP (destination unreachable) для PMTUD.
+Pass, Protocol: ICMP (echo-request), Source: BRANCH_NET, Destination: OFFICE_NETS.
+Pass, Protocol: TCP, Source: BRANCH_NET, Destination Port: 80, 443, 22, Destination: OFFICE_NETS.
+правило Block для всего лишнего с включенным логированием

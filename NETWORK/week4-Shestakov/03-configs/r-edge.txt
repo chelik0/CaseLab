@@ -1,0 +1,168 @@
+r-edge#sh run
+Building configuration...
+
+Current configuration : 2946 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname r-edge
+!
+boot-start-marker
+boot-end-marker
+!
+aqm-register-fnf
+!
+vrf definition INTERNET
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name skills.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+username itcore privilege 15 secret 5 $1$cRUR$5iFC.7YbfmU4OXArU/sR9/
+!
+redundancy
+!
+!
+ip ssh version 2
+!
+crypto keyring KR-BRANCH vrf INTERNET
+  pre-shared-key address 198.51.100.1 key P@ssw0rd
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes 256
+ hash sha256
+ authentication pre-share
+ group 14
+crypto isakmp profile ISA-BRANCH
+   keyring KR-BRANCH
+   match identity address 198.51.100.1 255.255.255.255 INTERNET
+!
+!
+crypto ipsec transform-set TS-GRE esp-aes 256 esp-sha256-hmac
+ mode transport
+!
+crypto ipsec profile IPSEC-PROF
+ set transform-set TS-GRE
+ set isakmp-profile ISA-BRANCH
+!
+!
+!
+!
+!
+!
+!
+interface Tunnel0
+ description GRE to r-branch
+ ip address 10.150.112.1 255.255.255.252
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ tunnel source Ethernet0/1
+ tunnel destination 198.51.100.1
+ tunnel vrf INTERNET
+ tunnel protection ipsec profile IPSEC-PROF
+!
+interface Ethernet0/0
+ description -=fw;WAN(outside)=-
+ ip address 10.150.111.6 255.255.255.252
+!
+interface Ethernet0/1
+ description -=isp;Ethernet0/0=-
+ vrf forwarding INTERNET
+ ip address 203.0.113.1 255.255.255.252
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router ospf 1
+ router-id 10.150.112.1
+ redistribute static subnets route-map RM-OFFICE
+ network 10.150.112.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 10.150.104.0 255.255.255.0 10.150.111.5
+ip route 10.150.105.0 255.255.255.0 10.150.111.5
+ip route 10.150.106.0 255.255.255.0 10.150.111.5
+ip route 10.150.110.0 255.255.255.0 10.150.111.5
+ip route 10.150.111.0 255.255.255.252 10.150.111.5
+ip route 192.0.2.100 255.255.255.255 Ethernet0/1 203.0.113.2
+ip route vrf INTERNET 0.0.0.0 0.0.0.0 203.0.113.2
+ip route vrf INTERNET 10.150.104.0 255.255.255.0 10.150.111.5 global
+ip route vrf INTERNET 10.150.105.0 255.255.255.0 10.150.111.5 global
+ip route vrf INTERNET 10.150.106.0 255.255.255.0 10.150.111.5 global
+ip route vrf INTERNET 10.150.110.0 255.255.255.0 10.150.111.5 global
+!
+!
+ip prefix-list OFFICE-NETS seq 5 permit 10.150.104.0/24
+ip prefix-list OFFICE-NETS seq 10 permit 10.150.105.0/24
+ip prefix-list OFFICE-NETS seq 15 permit 10.150.106.0/24
+ip prefix-list OFFICE-NETS seq 20 permit 10.150.110.0/24
+!
+route-map RM-OFFICE permit 10
+ match ip address prefix-list OFFICE-NETS
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+end

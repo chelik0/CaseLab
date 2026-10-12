@@ -1,0 +1,152 @@
+
+r-branch#sh run
+Building configuration...
+
+Current configuration : 2065 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname r-branch
+!
+boot-start-marker
+boot-end-marker
+!
+aqm-register-fnf
+!
+vrf definition INTERNET
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name skills.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+username itcore privilege 15 secret 5 $1$bOez$miQXQDbdzv7xJdtOyODO00
+!
+redundancy
+!
+!
+ip ssh version 2
+!
+crypto keyring KR-EDGE vrf INTERNET
+  pre-shared-key address 203.0.113.1 key P@ssw0rd
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes 256
+ hash sha256
+ authentication pre-share
+ group 14
+crypto isakmp profile ISA-EDGE
+   keyring KR-EDGE
+   match identity address 203.0.113.1 255.255.255.255 INTERNET
+!
+!
+crypto ipsec transform-set TS-GRE esp-aes 256 esp-sha256-hmac
+ mode transport
+!
+crypto ipsec profile IPSEC-PROF
+ set transform-set TS-GRE
+ set isakmp-profile ISA-EDGE
+!
+!
+!
+!
+!
+!
+!
+interface Tunnel0
+ description GRE to r-edge
+ ip address 10.150.112.2 255.255.255.252
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ tunnel source Ethernet0/1
+ tunnel destination 203.0.113.1
+ tunnel vrf INTERNET
+ tunnel protection ipsec profile IPSEC-PROF
+!
+interface Ethernet0/0
+ description BR-LAN (BR-PC1)
+ ip address 10.150.108.1 255.255.255.0
+!
+interface Ethernet0/1
+ description -=isp;Ethernet0/1=-
+ vrf forwarding INTERNET
+ ip address 198.51.100.1 255.255.255.252
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router ospf 1
+ router-id 10.150.112.2
+ passive-interface Ethernet0/0
+ network 10.150.108.0 0.0.0.255 area 0
+ network 10.150.112.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route vrf INTERNET 0.0.0.0 0.0.0.0 198.51.100.2
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+end

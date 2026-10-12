@@ -1,0 +1,121 @@
+isp#sh run
+Building configuration...
+
+Current configuration : 1459 bytes
+!
+! Last configuration change at 22:19:59 UTC Sun Sep 27 2026
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname isp
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+!
+no ip domain lookup
+ip domain name skills.local
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+username itcore privilege 15 secret 5 $1$cUEk$XEXLvcAl6vlpGPVYG6.OP.
+!
+redundancy
+!
+!
+ip ssh version 2
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description test resource "internet"
+ ip address 192.0.2.100 255.255.255.255
+!
+interface Ethernet0/0
+ description -=r-edge;Ethernet0/1=-
+ ip address 203.0.113.2 255.255.255.252
+!
+interface Ethernet0/1
+ description -=r-branch;Ethernet0/1=-
+ ip address 198.51.100.2 255.255.255.252
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 10.150.104.0 255.255.255.0 203.0.113.1
+ip route 10.150.105.0 255.255.255.0 203.0.113.1
+ip route 10.150.106.0 255.255.255.0 203.0.113.1
+ip route 10.150.110.0 255.255.255.0 203.0.113.1
+ip route 10.150.111.0 255.255.255.252 203.0.113.1
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+end

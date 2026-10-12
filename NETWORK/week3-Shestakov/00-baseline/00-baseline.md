@@ -1,0 +1,222 @@
+## sw-1-as#sh run
+Building configuration...
+
+Current configuration : 1503 bytes
+!
+! Last configuration change at 14:25:57 UTC Mon Sep 14 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname sw-1-as
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$kFrM$kNLAYiOfcD1amsvJX1tGg0
+!
+username itcore privilege 15 secret 5 $1$LMG0$8ijnkFu78aK77jt556fs4.
+no aaa new-model
+!
+!
+!
+!
+!
+no ip routing
+!
+!
+!
+ip domain-name skills.local
+no ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ description -=sw-core;e0/0=-
+ switchport trunk allowed vlan 10,99,999
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Ethernet0/1
+ description -=PC1=-
+ switchport access vlan 10
+ switchport mode access
+!
+interface Ethernet0/2
+ description -=PC2=-
+ switchport access vlan 10
+ switchport mode access
+!
+interface Ethernet0/3
+!
+interface Vlan99
+ description Interface upravleniya sw-1-as
+ ip address 10.150.110.11 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 10.150.110.1
+ip forward-protocol nd
+!
+ip http server
+ip http secure-server
+!
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end
+
+## sw-2-as#sh run
+Building configuration...
+
+Current configuration : 1551 bytes
+!
+! Last configuration change at 10:08:40 UTC Mon Sep 14 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname sw-2-as
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$G1B3$7EGriCh8jgl9XSpYOpR9N/
+!
+username itcore privilege 15 secret 5 $1$iBEn$j.nHLv5VQqqJz7HtvOLnI/
+no aaa new-model
+!
+!
+!
+!
+!
+no ip routing
+!
+!
+!
+ip domain-name skills.local
+no ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ description -=sw-core;e0/1=-
+ switchport trunk allowed vlan 10,20,99,999
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 999
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Ethernet0/1
+ description -=PC3=-
+ switchport access vlan 10
+ switchport mode access
+!
+interface Ethernet0/2
+ description -=SRV1=-
+ switchport access vlan 20
+ switchport mode access
+!
+interface Ethernet0/3
+!
+interface Vlan10
+ no ip address
+ no ip route-cache
+ shutdown
+!
+interface Vlan99
+ description Interfeys upravleniya sw-2-as
+ ip address 10.150.110.12 255.255.255.0
+!
+ip default-gateway 10.150.110.1
+ip forward-protocol nd
+!
+ip http server
+ip http secure-server
+!
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+!
+!
+end
+
+
+![[case lab/NETWORK/week3-Shestakov/01-topology.png]]
